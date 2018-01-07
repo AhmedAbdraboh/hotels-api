@@ -1,0 +1,30 @@
+sudo: required
+
+language: node_js 
+
+node_js:
+  - "8.9.4"
+
+branches:
+  only:
+    - master
+
+env:
+  global:
+    - CC_TEST_REPORTER_ID=85d558eb3d24f9efbe3bf7c10e9b3555baffada7b4dd29f70ae4f1f80ebddd44
+
+install:
+  - npm install
+  - npm i nyc -g
+
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
+
+script:
+  - nyc npm test
+
+after_success:
+  - nyc report --reporter=lcov
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
